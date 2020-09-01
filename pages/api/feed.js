@@ -1,8 +1,6 @@
 import connectDB from 'backend/db';
 import User from 'backend/models/User';
 import Feed from 'backend/models/Feed';
-import useAuth from 'backend/useAuth';
-import basicAuth from 'basic-auth';
 import RSS from 'rss';
 
 const FOOTER_TEXT =
@@ -10,14 +8,10 @@ const FOOTER_TEXT =
 
 export default async (req, res) => {
   await connectDB();
-  let user;
-  const credentials = basicAuth(req);
-  if (credentials) {
-    user = await User.findOne({
-      privateID: credentials.name,
-      privateKey: credentials.pass,
-    });
-  } else user = await useAuth(req);
+  const user = await User.findOne({
+      privateID: process.env.STATIC_USER,
+      privateKey: process.env.STATIC_PASS,
+  });
   if (!user) {
     res
       .status(401)
